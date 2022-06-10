@@ -1,0 +1,7 @@
+<library path="src">
+  <class name="Airplane Plugin" type="airplane_master.plugin_gui.AirplanePlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      User Interface for Master Pi in the cockpit.
+    </description>
+  </class>
+</library>

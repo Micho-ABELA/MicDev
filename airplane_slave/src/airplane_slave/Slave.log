@@ -1,0 +1,7 @@
+ERROR: ///////////////////// new session //////////////////////////
+ERROR: couldn't connect to Raspberry Pi Server (host= 192.168.4.130, port= 4444), Please change host or port in Slave_Config.ini file
+ERROR: SHUTDOWN... OK
+ERROR: ///////////////////// new session //////////////////////////
+ERROR: couldn't connect to Raspberry Pi Server (host= 192.168.4.130, port= 4444), Please change host or port in Slave_Config.ini file
+ERROR: SHUTDOWN... OK
+ERROR: ///////////////////// new session //////////////////////////

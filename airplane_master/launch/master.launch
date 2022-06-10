@@ -1,0 +1,4 @@
+<launch>
+    <node name="PiMaster_node" pkg="airplane_master" type="PiMaster.py" output="screen"/>
+    <node name="airplane_master" pkg="airplane_master" type="airplane_master"/>
+</launch>
