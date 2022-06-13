@@ -135,9 +135,10 @@ except rospy.ROSInterruptException:  # case: ros interruption
     Quit = "1"  # to stop program and Shutdown the Pi
 finally:
     s.close()
-    f1.close()
-    f2.close()
-    f3.close()
+    if socket_connection_status:  # close CSV Files manager
+        f1.close()
+        f2.close()
+        f3.close()
     logging.error("EXIT Program... OK")
     if Quit == "1":  # case: the user stopped using the program, in case he wanted Modifications
         logging.error("SHUTDOWN... OK")
