@@ -1,0 +1,3 @@
+<launch>
+    <node name="PiSlave_node" pkg="airplane_slave" type="PiSlave.py" output="screen"/>
+</launch>

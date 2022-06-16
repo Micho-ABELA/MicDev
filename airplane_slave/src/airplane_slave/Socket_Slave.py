@@ -12,15 +12,15 @@ def Setup_Connection():
     s.settimeout(20)  # timeout for connection attempt in seconds
     return s
 
-def Send_Data(msg):
+def Send_Data(msg, s):
     msg = str(msg)
     s.send(msg.encode('utf-8'))
 
-def Recv_Data(buffer_size):
+def Recv_Data(buffer_size, s):
     data = s.recv(buffer_size).decode('utf-8')
     return data
 
-def Send_Pickle(data):
+def Send_Pickle(data, s):
     s.send(data)
 
 
@@ -37,9 +37,9 @@ if __name__ == "__main__":
         s = Setup_Connection()
         s.connect((host1, port1))
         print("Created socket connection")
-        Send_Data(message)
+        Send_Data(message, s)
         print("Sent... Waiting for response")
-        response = Recv_Data(1024)
+        response = Recv_Data(1024, s)
         print("Response: {}".format(response))
     finally:
         print("FINISHING PROGRAM")

@@ -11,15 +11,16 @@ import logging
 import os
 import socket
 import rospy
+import rospkg
 from airplane_master.msg import custom
 from std_msgs.msg import String
 
 
 # Global Variables ||
-config_file = 'src/airplane_master/src/airplane_master/Master_Config.ini'  # Config file
-lang_file = 'src/airplane_master/src/airplane_master/Sentences.ini'  # Sentences File
-logging.basicConfig(filename='src/airplane_master/src/airplane_master/Master.log', level=logging.ERROR,
-                    format='%(levelname)s: %(message)s')  # To log information --> Master.log file
+config_file = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'Master_Config.ini')  # Config file
+lang_file = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'Sentences.ini')  # Sentences File
+logging.basicConfig(filename=os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'Master.log')
+                    , level=logging.ERROR, format='%(levelname)s: %(message)s') # To log information --> Master.log file
 temperature = []  # List to store temp data
 pressure = []  # List to store pressure data
 altitude = []  # List to store altitude data
@@ -27,9 +28,9 @@ pickles = []  # To store all pickle data
 buffer_size = 1024  # Buffer size for socket communication
 Quit = "0"  # Variable to stop program from GUI (user)
 response = 'OK'  # response to Slave
-csv_temp = 'src/airplane_master/src/airplane_master/CSV_Temp.csv'  # temp csv file
-csv_pres = 'src/airplane_master/src/airplane_master/CSV_Pressure.csv'  # pressure csv file
-csv_alt = 'src/airplane_master/src/airplane_master/CSV_Altitude.csv'  # altitude csv file
+csv_temp = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Temp.csv')  # temp csv file
+csv_pres = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Pressure.csv')  # pressure csv file
+csv_alt = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Altitude.csv')  # altitude csv file
 header = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN']  # header of CSV files
 socket_connection_status = False  # to keep track of socket connectivity with Server
 

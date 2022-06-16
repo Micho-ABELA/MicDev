@@ -12,12 +12,13 @@ import pickle
 import time
 import os
 import rospy
+import rospkg
 
 # Global Variables ||
-config_file = 'src/airplane_slave/src/airplane_slave/Slave_Config.ini'  # Config file
-logging.basicConfig(filename='src/airplane_slave/src/airplane_slave/Slave.log', level=logging.ERROR,
-                    format='%(levelname)s: %(message)s')  # config for Logger --> Slave.log file
-lang_file = 'src/airplane_slave/src/airplane_slave/Sentences.ini'  # Language file
+config_file = os.path.join(rospkg.RosPack().get_path('airplane_slave'), 'src/airplane_slave', 'Slave_Config.ini')  # Config file
+logging.basicConfig(filename=os.path.join(rospkg.RosPack().get_path('airplane_slave'), 'src/airplane_slave', 'Slave.log'),
+                    level=logging.ERROR, format='%(levelname)s: %(message)s')  # config for Logger --> Slave.log file
+lang_file = os.path.join(rospkg.RosPack().get_path('airplane_slave'), 'src/airplane_slave', 'Sentences.ini')  # Language file
 bus = []  # List of BMP180 in the SMBus
 temperature = []  # List to store temp data
 pressure = []  # List to store pressure data
@@ -82,8 +83,8 @@ try:
         pickles.append(pickle.dumps(altitude))  # dumps altitude data
 
         for data in pickles:  # send all data to Raspberry Pi Server
-            Socket_Slave.Send_Pickle(data)  # send list of values via Socket
-            response = Socket_Slave.Recv_Data(buffer_size)  # wait for the OK from Server (BLOCKING)
+            Socket_Slave.Send_Pickle(data, s)  # send list of values via Socket
+            response = Socket_Slave.Recv_Data(buffer_size, s)  # wait for the OK from Server (BLOCKING)
             if response != 'OK' and response != '1':
                 logging.error("couldn't send data to Raspberry Pi Server, due to the {} element".format(pickles.index(data)))
                 END = '1'  # to stop program and shutdown Pi Slave
@@ -98,7 +99,7 @@ try:
         altitude.clear()  # empty altitude data
         pickles.clear()  # empty pickles data to send a new one
 
-        END = Socket_Slave.Recv_Data(buffer_size)  # check if user wants to exit code
+        END = Socket_Slave.Recv_Data(buffer_size, s)  # check if user wants to exit code
         if END == '1':
             logging.error("RECEIVED ORDER PROPERLY, SHUTTING DOWN THE PI...")
             quit()  # end program

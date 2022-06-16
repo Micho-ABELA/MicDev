@@ -2,30 +2,10 @@
 
 # importing libraries ||
 # from smbus2 import SMBus
-# import time
 from airplane_slave import BMP085 as BMP180
 
-
 # Global Variables ||
-# measuring_number = 5
-# measuring_interval = 0.3
 
-
-# def Data_Sensors(bus, addresses):
-#    sensors = []
-#    for sensor in addresses:
-#        sensors.append(Read_Sensors(bus, sensor))
-#    return sensors
-
-# def Read_Sensors(bus, address):
-#    values = []
-#    Sum = 0
-#    for i in range(measuring_number):
-#        values.append(bus.read_byte_data(address, ))  # address, register, force
-#        Sum += values[i]
-#        time.sleep(measuring_interval)
-#    data = Sum / measuring_number
-#    return data
 
 # Creating Functions ||
 
