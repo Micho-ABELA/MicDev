@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 
-import BMP_Platform as Platform
+from airplane_slave import BMP_Platform as Platform
 
 
 def reverseByteOrder(data):
@@ -77,7 +77,7 @@ class Device(object):
         self._address = address
         if i2c_interface is None:
             # Use pure python I2C interface if none is specified.
-            import BMP_PureIO
+            from airplane_slave import BMP_PureIO
             self._bus = BMP_PureIO.SMBus(busnum)
         else:
             # Otherwise use the provided class to create an smbus interface.
