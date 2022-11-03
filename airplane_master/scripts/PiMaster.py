@@ -33,6 +33,7 @@ csv_pres = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airpl
 csv_alt = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Altitude.csv')  # altitude csv file
 header = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN']  # header of CSV files
 socket_connection_status = False  # to keep track of socket connectivity with Server
+copy_destination = '/var/www/html/'  # copy the CSV files to this directory, so the PiMaster can host them for the user
 
 
 # Creating Functions ||
@@ -51,13 +52,14 @@ def quit_callback(data):
 
 logging.error("///////////////////// new session //////////////////////////")  # To start a new session in Log file
 
+os.system('echo pi_master | sudo -S ip ad add 10.0.0.10/24 dev eth0')  # Assign ip address for eth0 of PiMaster
+
 parameters, names = Setup_Master.Read_File(config_file)  # Get the parameters entered by user in config file
 host, port, lang, measuring_interval = Setup_Master.Extract_Parameters(parameters)  # Extract values from the list
 
 check = CheckUp(lang)  # Check language variable
 if not check:
     logging.error("The program stopped because you entered a wrong value in Master_Config.ini, Please read above and fix it")
-    Quit = "1"  # to stop program and Shutdown the Pi
     quit()  # end program
 
 sentences = Translator.Extract_Lines(lang_file, lang)  # get the sentences from file
@@ -130,17 +132,16 @@ try:
 except socket.timeout:  # case: a socket timeout is raised
     logging.error("couldn't connect to Raspberry Pi Slave (timeout)")
     if socket_connection_status:
-        Quit = "1"  # to stop program and Shutdown the Pi
         quit()  # end program
 except rospy.ROSInterruptException:  # case: ros interruption
-    Quit = "1"  # to stop program and Shutdown the Pi
+    quit()  # end program
 finally:
     s.close()
     if socket_connection_status:  # close CSV Files manager
         f1.close()
         f2.close()
         f3.close()
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Temp.csv'.format(csv_temp, copy_destination))  # copy Temperature CSV into Apache's host
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Pressure.csv'.format(csv_pres, copy_destination))  # copy Pressure CSV into Apache's host
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Altitude.csv'.format(csv_alt, copy_destination))  # copy Altitude CSV into Apache's host
     logging.error("EXIT Program... OK")
-    if Quit == "1":  # case: the user stopped using the program, in case he wanted Modifications
-        logging.error("SHUTDOWN... OK")
-        os.system('sudo shutdown now')  # shutdown the Pi Master
