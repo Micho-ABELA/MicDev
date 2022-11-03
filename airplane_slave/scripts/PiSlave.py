@@ -45,13 +45,14 @@ def CheckUp(lang, sensor):
 
 logging.error("///////////////////// new session //////////////////////////")  # Start new section in Log file
 
+os.system('echo pi_slave | sudo -S ip ad add 10.0.0.20/24 dev eth0')  # Assign ip address for eth0 of PiSlave
+
 parameters, sensors = Setup_Slave.Read_File(config_file)  # Read config file and get data entered by user
 host, port, lang, measuring_interval, measuring_number = Setup_Slave.Extract_Parameters(parameters)  # Extract data from list
 
 check = CheckUp(lang, sensors)  # Check all user data
 if not check:
     logging.error("The program stopped because you entered a wrong value in Slave_Config.ini, Please read above and fix it")
-    END = '1'  # to stop program and shutdown Pi Slave
     quit()  # end program
 
 sentences = Translator.Extract_Lines(lang_file, lang)  # get the sentences depending on language of user
@@ -109,17 +110,16 @@ try:
 except socket.timeout:  # in case: failed connection with server (Pi Master)
     logging.error("couldn't connect to Raspberry Pi Server (host= {}, port= {}), Please change host or port in Slave_Config.ini file".format(host, port))
     if socket_connection_status:
-        END = '1'  # to stop program and shutdown Pi Slave
         quit()  # end program
 except pickle.PicklingError:  # in case: failed to pickle an object
     logging.error("couldn't pickle an object... problem while sending lists to Raspberry Pi Server")
     END = '1'  # to stop program and shutdown Pi Slave
     quit()  # end program
 except rospy.ROSInterruptException:  # case: ros interruption
-    END = '1'  # to stop program and shutdown Pi Slave
+    quit()  # end program
 finally:
     s.close()  # close socket connection
     logging.error("EXIT Program... OK")
     if END == '1':  # case: the user stopped using the program, in case he wanted Modifications
         logging.error("SHUTDOWN... OK")
-        os.system('sudo shutdown now')  # shutdown the Pi Slave
+        os.system('echo pi_slave | sudo -S shutdown now')  # shutdown the Pi Slave
