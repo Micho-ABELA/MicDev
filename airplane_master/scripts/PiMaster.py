@@ -33,7 +33,7 @@ csv_pres = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airpl
 csv_alt = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Altitude.csv')  # altitude csv file
 header = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN']  # header of CSV files
 socket_connection_status = False  # to keep track of socket connectivity with Server
-copy_destination = '/var/www/html/'  # copy the CSV files to this directory, so the PiMaster can host them for the user
+copy_destination = '/var/www/html/CSV/'  # copy the CSV files to this directory, so the PiMaster can host them for the user
 
 
 # Creating Functions ||
