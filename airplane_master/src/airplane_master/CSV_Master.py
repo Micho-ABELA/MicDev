@@ -2,6 +2,7 @@
 
 # importing libraries ||
 import csv
+import datetime
 
 # Global Variables ||
 
@@ -14,6 +15,11 @@ def Create_CSV(f, header):
 
 def Write_To_CSV(csv_writer, row):
     csv_writer.writerow(row)
+
+def Get_Unique_Name():
+    time_now = datetime.datetime.now()  # get the actual time
+    unique_name = time_now.strftime("_%Y-%m-%d_%H-%M-%S")  # string part to stick to your file
+    return unique_name
 
 
 # Code Start ||
@@ -35,6 +41,9 @@ if __name__ == '__main__':
         Write_To_CSV(csv_writer, value2)
         Write_To_CSV(csv_writer, value3)
         Write_To_CSV(csv_writer, value4)
+
+        new_name = "CSV_Temp{}.csv".format(Get_Unique_Name())
+        print(new_name)
     finally:
         f.close()  # close csv file
         print("FINISHING PROGRAM")

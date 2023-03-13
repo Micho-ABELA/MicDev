@@ -19,6 +19,7 @@ class MyWidget(QWidget):
         self.InitUI()
         rospy.Subscriber('data_topic', custom, self.callback)  # subscribe to the data Topic from PiMaster
         self.pub = rospy.Publisher('topic_quit', String, queue_size=10)  # create a Publisher to share Quit event
+        self.pub2 = rospy.Publisher('topic_record', String, queue_size=10)  # create a Publisher to share Record event
 
     def InitUI(self):
         self.Connection_Label.setText("Connecting...")
@@ -26,10 +27,23 @@ class MyWidget(QWidget):
         self.Exit_Button.setStyleSheet("background-color: red")
         self.Exit_Button.setText("EXIT")
         self.Exit_Button.clicked[bool].connect(self.Exit_Event)
+        self.Record_Button.setStyleSheet("background-color: green")
+        self.Record_Button.setText("Start Recording")
+        self.Record_Button.clicked[bool].connect(self.Record_Event)
 
     def Exit_Event(self):
         self.pub.publish("1")  # send EXIT message
         self.close()
+
+    def Record_Event(self):
+        if self.Record_Button.text() == "Start Recording":
+            self.pub2.publish("start")  # send start record message
+            self.Record_Button.setStyleSheet("background-color: red")
+            self.Record_Button.setText("Stop Recording")
+        elif self.Record_Button.text() == "Stop Recording":
+            self.pub2.publish("stop")  # send stop record message
+            self.Record_Button.setStyleSheet("background-color: green")
+            self.Record_Button.setText("Start Recording")
 
     def callback(self, data):  # This is the CallBack function called after subscribing the topic, to use the data
         column_counter = 0
