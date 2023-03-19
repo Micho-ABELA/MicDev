@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MicDev file hosting website</title>
+
+    <meta name="description" content="Source code for file hosting to clients connected wirelessly to a Raspberry Pi.">
+    <meta name="author" content="MicDev">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+	<style>
+		body {
+		  background-color: black;
+		}
+		h1 {
+		  color: red;
+      font-weight: bold;
+			text-align: center;
+      margin-top: 40px;
+      font-style: italic;
+		}
+
+    h4 {
+		  color: white;
+      font-weight: bold;
+			text-align: center;
+			margin-bottom: 50px;
+      text-decoration: underline;
+		}
+
+    .card-header .card-link {
+			color: #fff;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+		}
+		.card-header {
+  		background-color: blue;
+		}
+		#card-689620 .card {
+  		border-color: blue;
+		}
+
+    .btn-primary {
+  		background-color: rgb(29, 165, 35);
+		  border-color: rgb(29, 165, 35);
+		}
+
+    .btn-delete {
+      width: 80px;
+    }
+	</style>
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+        <!--  <img src="MicDev_Logo.png" alt="MicDev Logo" style="width: 600px; height: 275px;"> -->
+          <h1 class="text-center"> MICDEV </h1>
+          <h4 class="text-center"> Files Download </h4>
+          <div id="card-689620">
+
+            <!-- This is the first collapse button -->
+            <div class="card">
+              <div class="card-header">
+                  <a class="card-link collapsed" data-toggle="collapse" data-parent="#card-689620" href="#card-element-612040">Pressure CSV files</a>
+              </div>
+              <div id="card-element-612040" class="collapse">
+                <div class="card-body">
+                  <table id="press-table" class="table">
+                    <thead>
+                      <tr>
+                        <th> # </th>
+                        <th> Files Recorded </th>
+                        <th> |	Manage </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+               </div>
+           </div>
+
+           <!-- This is the second collapse button -->
+           <div class="card">
+            <div class="card-header">
+                 <a class="card-link collapsed" data-toggle="collapse" data-parent="#card-689620" href="#card-element-612041">Temperature CSV files</a>
+            </div>
+            <div id="card-element-612041" class="collapse">
+              <div class="card-body">
+                <table id="temp-table" class="table">
+                  <thead>
+                    <tr>
+                      <th> # </th>
+                      <th> Files Recorded </th>
+                      <th> |	Manage </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+             </div>
+         </div>
+
+         <!-- This is the third collapse button -->
+            <div class="card">
+              <div class="card-header">
+                   <a class="card-link collapsed" data-toggle="collapse" data-parent="#card-689620" href="#card-element-449417">Altitude CSV files</a>
+              </div>
+              <div id="card-element-449417" class="collapse">
+                <div class="card-body">
+                  <table id="alti-table" class="table">
+                    <thead>
+                      <tr>
+                        <th> # </th>
+                        <th> Files Recorded </th>
+                        <th> |	Manage </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+	  </div>
+  </div>
+
+  
+    <ul id="press-file-names" hidden="hidden"></ul>
+    <ul id="temp-file-names" hidden="hidden"></ul>
+    <ul id="alti-file-names" hidden="hidden"></ul>
+    <script> 
+      // Function that gets the file names from a PHP file that has read the file names from a directory
+      function getFileList(directory, ulId) {
+			    fetch(`get_file_names.php?dir=${directory}`)
+          .then(response => response.json())
+          .then(data => {
+            let fileList = Object.values(data.files);
+            let listItems = '';
+
+            for (let i = 0; i < fileList.length; i++) {
+              listItems += '<li>' + fileList[i] + '</li>';
+            }
+
+            document.getElementById(ulId).innerHTML = listItems;
+          })
+          .catch(error => console.error(error));
+		  }
+      // Function that builds the table inside the collapse button
+      function buildTableBody(fileList, tableId) {
+          let tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+          tableBody.innerHTML = '';
+
+          for (let i = 0; i < fileList.length; i++) {
+              let row = tableBody.insertRow();
+              let indexCell = row.insertCell(0);
+              let nameCell = row.insertCell(1);
+              let buttonCell = row.insertCell(2);
+
+              indexCell.innerHTML = '<strong>' + (i + 1) + '</strong>';
+              nameCell.innerText = fileList[i];
+              
+              let downloadButton = document.createElement('button');
+              downloadButton.type = 'button';
+              downloadButton.className = 'btn btn-primary mr-2';
+              downloadButton.innerText = 'Download';
+
+              downloadButton.addEventListener('click', function() {
+                let fileName = this.closest('tr').querySelector('td:nth-child(2)').innerText;
+                let download_tableId = this.closest('table').id;
+                let filePath;
+                
+                if (download_tableId === 'press-table') {
+                  filePath = '/CSV_Files/Press/';
+                } else if (download_tableId === 'temp-table') {
+                  filePath = '/CSV_Files/Temp/';
+                } else if (download_tableId === 'alti-table') {
+                  filePath = '/CSV_Files/Alti/';
+                }
+                let link = document.createElement('a');
+                link.setAttribute('href', filePath + fileName);
+                link.setAttribute('download', fileName);
+                link.click();
+              });
+
+              let deleteButton = document.createElement('button');
+              deleteButton.type = 'button';
+              deleteButton.className = 'btn btn-danger ml-2 btn-delete';
+              deleteButton.style.marginTop = '5px';
+              deleteButton.innerText = 'Delete';
+
+              deleteButton.addEventListener('click', function() {
+                  if (this.innerText === 'Delete') {
+                      this.innerText = 'Sure?';
+                      this.classList.add('btn-warning');
+                  } else {
+                      let fileNAME = this.closest('tr').querySelector('td:nth-child(2)').innerText;
+                      let delete_tableId = this.closest('table').id;
+                      let filePATH;
+                      if (delete_tableId === 'press-table') {
+                          filePATH = 'CSV_Files/Press/';
+                      } else if (delete_tableId === 'temp-table') {
+                          filePATH = 'CSV_Files/Temp/';
+                      } else if (delete_tableId === 'alti-table') {
+                          filePATH = 'CSV_Files/Alti/';
+                      }
+
+                      // if (confirm('Are you sure you want to delete ' + fileNAME + '?')) {}  --> FOR THE POPUP WINDOW CONFIRMATION
+                      let xhr = new XMLHttpRequest();
+                      xhr.open('DELETE', '/delete_file.php?file=' + encodeURIComponent(fileNAME) + '&path=' + encodeURIComponent(filePATH));
+                      xhr.onload = function() {
+                          if (xhr.status === 200) {
+                              row.remove();
+                          } else {
+                              console.log('Unable to delete file.');
+                          }
+                      };
+                      xhr.send();
+
+                      this.innerText = 'Delete';
+                      this.classList.remove('btn-warning');
+                  }
+              });
+
+              deleteButton.addEventListener('blur', function() {
+                  if (this.innerText === 'Sure?') {
+                      this.innerText = 'Delete';
+                      this.classList.remove('btn-warning');
+                  }
+              });
+
+              buttonCell.appendChild(downloadButton);
+              buttonCell.appendChild(deleteButton);
+          }
+      }
+      function buildTableBodyFromList(listId, tableId) {
+          let list = document.getElementById(listId);
+          let listItems = list.querySelectorAll('li');
+          let fileList = [];
+          for (let i = 0; i < listItems.length; i++) {
+            fileList.push(listItems[i].textContent);
+          }
+          fileList.reverse(); // Reverse the order of the file names
+          buildTableBody(fileList, tableId);
+      }
+
+      getFileList('/var/www/html/CSV_Files/Press/', "press-file-names");
+      getFileList('/var/www/html/CSV_Files/Temp/', "temp-file-names");
+      getFileList('/var/www/html/CSV_Files/Alti/', "alti-file-names");
+
+      setTimeout(function() {
+          buildTableBodyFromList("press-file-names", "press-table");
+          buildTableBodyFromList("temp-file-names", "temp-table");
+          buildTableBodyFromList("alti-file-names", "alti-table");
+      }, 400);
+
+    </script>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+  </body>
+</html>
