@@ -34,7 +34,9 @@ csv_pres = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airpl
 csv_alt = os.path.join(rospkg.RosPack().get_path('airplane_master'), 'src/airplane_master', 'CSV_Altitude.csv')  # altitude csv file
 header = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN']  # header of CSV files
 socket_connection_status = False  # to keep track of socket connectivity with Server
-copy_destination = '/var/www/html/CSV/'  # copy the CSV files to this directory, so the PiMaster can host them for the user
+copy_destination_temp = '/var/www/html/CSV_Files/Temp/'  # copy the CSV files to temp directory, so the PiMaster can host them for the user
+copy_destination_press = '/var/www/html/CSV_Files/Press/'  # copy the CSV files to press directory, so the PiMaster can host them for the user
+copy_destination_alti = '/var/www/html/CSV_Files/Alti/'  # copy the CSV files to alti directory, so the PiMaster can host them for the user
 
 
 # Creating Functions ||
@@ -59,9 +61,9 @@ def record_callback(data_record):
         f3.close()
         # COPY CSV FILES HERE TO APACHE
         time_now = CSV_Master.Get_Unique_Name()  # get time to save CSV files with unique names
-        os.system('echo pi_master | sudo -S cp {} {}CSV_Temp{}.csv'.format(csv_temp, copy_destination, time_now))  # copy Temperature CSV into Apache's host
-        os.system('echo pi_master | sudo -S cp {} {}CSV_Press{}.csv'.format(csv_pres, copy_destination, time_now))  # copy Pressure CSV into Apache's host
-        os.system('echo pi_master | sudo -S cp {} {}CSV_Alti{}.csv'.format(csv_alt, copy_destination, time_now))  # copy Altitude CSV into Apache's host
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Temp{}.csv'.format(csv_temp, copy_destination_temp, time_now))  # copy Temperature CSV into Apache's host
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Press{}.csv'.format(csv_pres, copy_destination_press, time_now))  # copy Pressure CSV into Apache's host
+        os.system('echo pi_master | sudo -S cp {} {}CSV_Alti{}.csv'.format(csv_alt, copy_destination_alti, time_now))  # copy Altitude CSV into Apache's host
         # Reopen CSV files to clear/empty them
         f1 = open(csv_temp, 'w', newline='')  # open temp csv file
         f2 = open(csv_pres, 'w', newline='')  # open pressure csv file
@@ -168,7 +170,7 @@ finally:
         f3.close()
         if Record:  # if user stopped program without saving his record
             time_now = CSV_Master.Get_Unique_Name()  # get time to save CSV files with unique names
-            os.system('echo pi_master | sudo -S cp {} {}CSV_Temp{}.csv'.format(csv_temp, copy_destination, time_now))  # copy Temperature CSV into Apache's host
-            os.system('echo pi_master | sudo -S cp {} {}CSV_Press{}.csv'.format(csv_pres, copy_destination, time_now))  # copy Pressure CSV into Apache's host
-            os.system('echo pi_master | sudo -S cp {} {}CSV_Alti{}.csv'.format(csv_alt, copy_destination, time_now))  # copy Altitude CSV into Apache's host
+            os.system('echo pi_master | sudo -S cp {} {}CSV_Temp{}.csv'.format(csv_temp, copy_destination_temp, time_now))  # copy Temperature CSV into Apache's host
+            os.system('echo pi_master | sudo -S cp {} {}CSV_Press{}.csv'.format(csv_pres, copy_destination_press, time_now))  # copy Pressure CSV into Apache's host
+            os.system('echo pi_master | sudo -S cp {} {}CSV_Alti{}.csv'.format(csv_alt, copy_destination_alti, time_now))  # copy Altitude CSV into Apache's host
     logging.error("EXIT Program... OK")
