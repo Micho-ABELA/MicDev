@@ -27,6 +27,7 @@ pickles = []  # List to store all sensors data
 buffer_size = 1024  # size of buffer for reception
 END = '0'  # to stop program and shutdown Pi Slave
 socket_connection_status = False  # to keep track of socket connectivity with Server
+skip_socket_reading = '0'  # to handle special cases of the send/receive response of data pickles
 
 
 # Creating Functions ||
@@ -45,7 +46,7 @@ def CheckUp(lang, sensor):
 
 logging.error("///////////////////// new session //////////////////////////")  # Start new section in Log file
 
-os.system('echo pi_slave | sudo -S ip ad add 10.0.0.20/24 dev eth0')  # Assign ip address for eth0 of PiSlave
+# os.system('echo pi_slave | sudo -S ip ad add 10.0.0.20/24 dev eth0')  # Assign ip address for eth0 of PiSlave
 
 parameters, sensors = Setup_Slave.Read_File(config_file)  # Read config file and get data entered by user
 host, port, lang, measuring_interval, measuring_number = Setup_Slave.Extract_Parameters(parameters)  # Extract data from list
@@ -86,25 +87,30 @@ try:
         for data in pickles:  # send all data to Raspberry Pi Server
             Socket_Slave.Send_Pickle(data, s)  # send list of values via Socket
             response = Socket_Slave.Recv_Data(buffer_size, s)  # wait for the OK from Server (BLOCKING)
-            if response != 'OK' and response != '1':
+            if response != 'OK' and response != '1' and response != 'OK0':
                 logging.error("couldn't send data to Raspberry Pi Server, due to the {} element".format(pickles.index(data)))
-                END = '1'  # to stop program and shutdown Pi Slave
-                quit()  # end program
+                # END = '1'  # to stop program and shutdown Pi Slave
+                # quit()  # end program
+                continue  # to not stop the code from running in case Master didn't receive one of the data list, it will get it next time
             if response == '1':  # case: receive caught the exit program
                 logging.error("RECEIVED ORDER PROPERLY, SHUTTING DOWN THE PI...")
                 END = '1'  # to stop program and shutdown Pi Slave
                 quit()  # end program
+            if response == 'OK0':  # special case: Master's response was too quick, so mixture of Response and Quit value
+                skip_socket_reading = '1'
 
         temperature.clear()  # empty temp data
         pressure.clear()  # empty pressure data
         altitude.clear()  # empty altitude data
         pickles.clear()  # empty pickles data to send a new one
 
-        END = Socket_Slave.Recv_Data(buffer_size, s)  # check if user wants to exit code
+        if skip_socket_reading == '0':  # skip if special case response caught
+            END = Socket_Slave.Recv_Data(buffer_size, s)  # check if user wants to exit code
         if END == '1':
             logging.error("RECEIVED ORDER PROPERLY, SHUTTING DOWN THE PI...")
             quit()  # end program
 
+        skip_socket_reading = '0'  # put back to initial value
         time.sleep(measuring_interval)  # wait a bit before measuring again
 
 except socket.timeout:  # in case: failed connection with server (Pi Master)

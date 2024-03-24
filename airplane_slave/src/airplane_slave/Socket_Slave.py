@@ -9,7 +9,7 @@ import socket
 # Creating Functions ||
 def Setup_Connection():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(20)  # timeout for connection attempt in seconds
+    s.settimeout(30)  # timeout for connection attempt in seconds
     return s
 
 def Send_Data(msg, s):
