@@ -77,7 +77,7 @@ def record_callback(data_record):
 
 logging.error("///////////////////// new session //////////////////////////")  # To start a new session in Log file
 
-os.system('echo pi_master | sudo -S ip ad add 10.0.0.10/24 dev eth0')  # Assign ip address for eth0 of PiMaster
+# os.system('echo pi_master | sudo -S ip ad add 10.0.0.10/24 dev eth0')  # Assign ip address for eth0 of PiMaster
 
 parameters, names = Setup_Master.Read_File(config_file)  # Get the parameters entered by user in config file
 host, port, lang, measuring_interval = Setup_Master.Extract_Parameters(parameters)  # Extract values from the list

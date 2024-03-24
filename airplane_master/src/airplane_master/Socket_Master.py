@@ -24,6 +24,9 @@ def Send_Data(client, msg):
 
 def Recv_Pickle(client, buffer_size):
     Pickle = client.recv(buffer_size)
+    if Pickle == 0:  # in case buffer is empty, return an empty list
+        data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return data
     data = pickle.loads(Pickle)
     return data
 
